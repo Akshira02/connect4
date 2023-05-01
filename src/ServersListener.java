@@ -36,7 +36,6 @@ public class ServersListener implements Runnable
                 String data=cfc.getData();
                 int c = data.charAt(0) - '0';
                 int r = data.charAt(1) - '0';
-                System.out.println("Before condition to check");
                 if(r != 9)
                     checkGameOver( r, c);
                 if(cfc.getCommand()==CommandFromClient.RESTART)
@@ -45,7 +44,6 @@ public class ServersListener implements Runnable
                 }
                 if(cfc.getCommand()==CommandFromClient.OPEN)
                 {
-                    System.out.println("OPEN"+ data.charAt(2) );
                     if(data.charAt(2) == 'R')
                     {
                         CommandFromServer.rConnected = true;
@@ -58,7 +56,6 @@ public class ServersListener implements Runnable
                 }
                 if(cfc.getCommand()==CommandFromClient.RESTART)
                 {
-                    System.out.println("RESET"+ data.charAt(2) );
                     gameData.reset();
 
                     if(data.charAt(2) == 'R' && data.charAt(1) == '9')
@@ -82,9 +79,6 @@ public class ServersListener implements Runnable
                         && !gameData.isWinner('B', r, c))
                 {
                     // pulls data for the move from the data field
-
-                    System.out.println("Within condition to check");
-
                     // changes the server side game board
                     gameData.getGrid()[r][c] = player;
                     next = (turn=='R')?'B':'R';
@@ -98,7 +92,6 @@ public class ServersListener implements Runnable
                 }
                 if(cfc.getCommand()==CommandFromClient.CLOSE)
                 {
-                    System.out.println("cLOSe"+ data.charAt(2) );
                     gameData.reset();
                     sendCommand(new CommandFromServer(CommandFromServer.CLOSE,data));
                 }
@@ -119,13 +112,10 @@ public class ServersListener implements Runnable
             turn ='R';
 
         // informs both client of the new player turn
-        System.out.println("Going to set turn in server");
         if (turn == 'R') {
-            System.out.println("Turn is set to R_TURN in server");
             sendCommand(new CommandFromServer(CommandFromServer.R_TURN, null));
         }
         else {
-            System.out.println("Turn is set to B_TURN in server");
             sendCommand(new CommandFromServer(CommandFromServer.B_TURN, null));
         }
     }
@@ -135,23 +125,18 @@ public class ServersListener implements Runnable
         int command = -1;
 //        if(gameData.isCat())
 //            command = CommandFromServer.TIE;
-        System.out.println("Check Game over");
         if(gameData.isWinner('R',r, c)) {
             command = CommandFromServer.X_WINS;
-            System.out.println("R Wins");
         }
         else if(gameData.isWinner('B',r, c)) {
             command = CommandFromServer.O_WINS;
-            System.out.println("B Wins");
         }
 
         // if the game ended, informs both clients of the game's end state
         if(command!=-1) {
-            System.out.println("Winning message to client");
             sendCommand(new CommandFromServer(command, null));
         }
         if(command==1) {
-            System.out.println("Reset message to client");
             sendCommand(new CommandFromServer(command, null));
         }
     }

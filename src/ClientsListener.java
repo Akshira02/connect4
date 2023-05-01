@@ -24,16 +24,12 @@ public class ClientsListener implements Runnable
             while(true)
             {
                 CommandFromServer cfs = (CommandFromServer)is.readObject();
-                System.out.println("Client listener " + cfs.getCommand());
-//                System.out.println("Client Listener");
 
                 // processes the received command
                 if(cfs.getCommand() == CommandFromServer.R_TURN) {
-                    System.out.println("R Turn in client");
                     frame.setTurn('R');
                 }
                 else if(cfs.getCommand() == CommandFromServer.B_TURN) {
-                    System.out.println("B Turn in client");
                     frame.setTurn('B');
                 }
                 else if(cfs.getCommand() == cfs.MOVE)
@@ -45,7 +41,6 @@ public class ClientsListener implements Runnable
 
                     // changes the board and redraw the screen
                     frame.makeMove(c,r,data.charAt(2));
-//                    System.out.println("c:" + c + " r:" +  r + " " + data.charAt(2));
                 }
                 else if(cfs.getCommand() == cfs.RESTART)
                 {
@@ -75,7 +70,6 @@ public class ClientsListener implements Runnable
                 }
                 else if(cfs.getCommand() == CommandFromServer.CLOSE)
                 {
-                    System.out.println("Going to close windows");
                     String player = (cfs.getData().charAt(2)=='B')?"BLACK":"RED";
                     frame.setText(player + "QUIT, SHUTTING DOWN IN 5 seconds");
                     frame.CloseOtherWindowIn5Seconds(player);

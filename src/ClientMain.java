@@ -11,7 +11,6 @@ public class ClientMain
             // create an object for the TTT game
             GameData gameData = new GameData();
 
-            System.out.println("Enter the IP Address of Server. Example 127.0.0.1");
             Scanner sc= new Scanner(System.in);
             String ipAddress = sc.nextLine();
 
@@ -32,7 +31,6 @@ public class ClientMain
             }
             else {
                 frame = new TTTFrame(gameData, os, 'B');
-                System.out.println("Creating frame for B" +  cfs.getCommand());
             }
 
             // Starts a thread that listens for commands from the server

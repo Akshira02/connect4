@@ -32,12 +32,11 @@ public class TTTFrame extends JFrame  {
         this.player = player;
         gameData.reset();
 
-        System.out.println("Creating frame for Player " + player);
 
         // makes closing the frame close the program
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
-        // Set initial frame message
+        // Set initial frame message - update server that it is opened. Client
         if(player == 'R') {
             text = "Waiting for B to Connect";
             try {
@@ -72,22 +71,17 @@ public class TTTFrame extends JFrame  {
                 int c = ((e.getY() - yoffset) / 60);
 
                 //If not succeeded
-                System.out.println("Status " + status);
+                //Left click
                 if (e.getButton() == MouseEvent.BUTTON1) {
                     if (status != true) {
-                        System.out.println("Player:" + player + " Next: " + gameData.getNext() + " pressed " + pressed + " rOpened" + rOpened + " bOpened " + bOpened);
                         if (player == 'R' && pressed == false && rOpened && bOpened  && playerTurn =='R' ) {
                             if (gameData.getGrid()[r][c] == ' ') {
-                                System.out.println("Setting next to B " + pressed);
                                 gameData.getGrid()[r][c] = 'R';
                                 text = "B's Turn";
                                 pressed = true;
-                                System.out.println("R Pressed  " + pressed + " r:" + r + " c:" + c);
                                 try {
-                                    System.out.println("writing to server - move to player  " + player);
                                     os.writeObject(new CommandFromClient(CommandFromClient.MOVE, "" + c + r + player));
                                     os.flush();
-                                    System.out.println("writing to server - moved to player  " + player);
                                 } catch (IOException ex) {
                                     throw new RuntimeException(ex);
                                 }
@@ -97,16 +91,12 @@ public class TTTFrame extends JFrame  {
                         }
                         if (player == 'B' && pressed == false && rOpened && bOpened && playerTurn =='B') {
                             if (gameData.getGrid()[r][c] == ' ') {
-                                System.out.println("Setting next to R");
                                 gameData.getGrid()[r][c] = 'B';
                                 text = "R's Turn";
                                 pressed = true;
-                                System.out.println("B Pressed  " + pressed + " r:" + r + " c:" + c);
                                 try {
-                                    System.out.println("writing to server - move to player  " + player);
                                     os.writeObject(new CommandFromClient(CommandFromClient.MOVE, "" + c + r + player));
                                     os.flush();
-                                    System.out.println("writing to server - moved to player  " + player);
                                 } catch (IOException ex) {
                                     throw new RuntimeException(ex);
                                 }
@@ -115,6 +105,7 @@ public class TTTFrame extends JFrame  {
                         }
                     }
                 }
+                //Right Click
                 if (e.getButton() == MouseEvent.BUTTON3 && status == true) {
                     if (player == 'R') {
                         try {
@@ -161,7 +152,6 @@ public class TTTFrame extends JFrame  {
         this.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                System.out.println("Closing window");
                 try {
                     os.writeObject(new CommandFromClient(CommandFromClient.CLOSE, "55" + player));
                 } catch (IOException ex) {
@@ -174,7 +164,6 @@ public class TTTFrame extends JFrame  {
 
     public void paint(Graphics g) {
 //background
-        System.out.println("Paint called");
         int R = -1;
         int C = -1;
         g.setColor(Color.yellow);
@@ -249,8 +238,6 @@ public class TTTFrame extends JFrame  {
     public void setRestartText(char other) {
 
         //Both reset
-        System.out.println("gameData.restartR " + gameData.restartR);
-        System.out.println("gameData.restartB " + gameData.restartB);
         if (gameData.restartR  || gameData.restartB) {
             if (player == other)
                 text = "Waiting for " + (player == 'R' ? "Black" : "Red") + " to agree to a new game!";
@@ -258,14 +245,11 @@ public class TTTFrame extends JFrame  {
                 text = (player == 'R' ? "Black" : "Red") + " is ready. Right click to start a new game";
         }
         if (gameData.restartR && gameData.restartB) {
-            System.out.println("Within 1 " + gameData.restartR);
             if (player == 'R') {
-                System.out.println("Within2 " + gameData.restartR);
                 text = "Your Turn";
 
             }
             if (player == 'B') {
-                System.out.println("Within3 " + gameData.restartR);
                 text = "R's Turn";
 
             }
@@ -286,39 +270,26 @@ public class TTTFrame extends JFrame  {
     }
 
     public void CloseOtherWindowIn5Seconds(String player) {
-        text = player + " QUIT, SHUTTING DOWN IN 3 seconds";
+        text = player + " QUIT, SHUTTING DOWN IN 5 seconds";
         repaint();
-        System.out.println(text);
-        Timer timer = new Timer(3000, new ActionListener(){
-            public void actionPerformed(ActionEvent evt) {
-                System.exit(0);
-            }
-        });
-        timer.setRepeats(false);
-        timer.start();
-//        text = player + " QUIT, SHUTTING DOWN IN 2 seconds";
-//        repaint();
-//        System.out.println(text);
-//        timer = new Timer(1000, new ActionListener(){
-//            public void actionPerformed(ActionEvent evt) {
-//                System.exit(0);
-//            }
-//        });
-//        timer.setRepeats(false);
-//        timer.start();
-//        text = player + " QUIT, SHUTTING DOWN IN 1 seconds";
-//        repaint();
-//        System.out.println(text);
-//        timer = new Timer(1000, new ActionListener(){
-//            public void actionPerformed(ActionEvent evt) {
-//                System.exit(0);
-//            }
-//        });
-//        timer.setRepeats(false);
-//        timer.start();
-
-
-
+        try {
+            Thread.sleep(1000);
+            text = player + " QUIT, SHUTTING DOWN IN 4 seconds";
+            repaint();
+            Thread.sleep(1000);
+            text = player + " QUIT, SHUTTING DOWN IN 3 seconds";
+            repaint();
+            Thread.sleep(1000);
+            text = player + " QUIT, SHUTTING DOWN IN 2 seconds";
+            repaint();
+            Thread.sleep(1000);
+            text = player + " QUIT, SHUTTING DOWN IN 1 seconds";
+            repaint();
+            Thread.sleep(1000);
+            System.exit(0);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void setPressed(boolean pressed) {
