@@ -2,7 +2,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-//go back and change SErverListenerModified to ServersListener (class name and calling)
 
 public class ServerMain
 {
@@ -16,10 +15,10 @@ public class ServerMain
             ObjectOutputStream xos = new ObjectOutputStream(xCon.getOutputStream());
             ObjectInputStream xis = new ObjectInputStream(xCon.getInputStream());
 
-            xos.writeObject(new CommandFromServer(CommandFromServer.CONNECTED_AS_RED,null));
+            xos.writeObject(new CommandFromServer(CommandFromServer.CONNECTED_AS_R,null));
             System.out.println("Red has Connected.");
 
-            ServerListenerModified sl = new ServerListenerModified(xis,xos,'X');
+            ServersListener sl = new ServersListener(xis,xos,'R');
             Thread t = new Thread(sl);
             t.start();
 
@@ -27,16 +26,16 @@ public class ServerMain
             ObjectOutputStream oos = new ObjectOutputStream(oCon.getOutputStream());
             ObjectInputStream ois = new ObjectInputStream(oCon.getInputStream());
 
-            oos.writeObject(new CommandFromServer(CommandFromServer.CONNECTED_AS_BLUE,null));
-            System.out.println("Blue has Connected.");
+            oos.writeObject(new CommandFromServer(CommandFromServer.CONNECTED_AS_B,null));
+            System.out.println("Black has Connected.");
 
-            sl = new ServerListenerModified(ois,oos,'O');
+            sl = new ServersListener(ois,oos,'B');
             t = new Thread(sl);
             t.start();
 
 
-            xos.writeObject(new CommandFromServer(CommandFromServer.RED_TURN,null));
-            oos.writeObject(new CommandFromServer(CommandFromServer.RED_TURN,null));
+            xos.writeObject(new CommandFromServer(CommandFromServer.R_TURN,null));
+            oos.writeObject(new CommandFromServer(CommandFromServer.R_TURN,null));
         }
         catch (Exception e)
         {

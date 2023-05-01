@@ -3,8 +3,6 @@ import java.io.ObjectOutputStream;
 
 public class ClientsListener implements Runnable
 {
-    //X is now Red
-    //Y is now Blue
     private ObjectInputStream is = null;
     private ObjectOutputStream os = null;
     private TTTFrame frame = null;
@@ -22,15 +20,22 @@ public class ClientsListener implements Runnable
     public void run() {
         try
         {
+
             while(true)
             {
                 CommandFromServer cfs = (CommandFromServer)is.readObject();
+                System.out.println("Client listener " + cfs.getCommand());
+//                System.out.println("Client Listener");
 
                 // processes the received command
-                if(cfs.getCommand() == CommandFromServer.RED_TURN)
+                if(cfs.getCommand() == CommandFromServer.R_TURN) {
+                    System.out.println("R Turn in client");
                     frame.setTurn('R');
-                else if(cfs.getCommand() == CommandFromServer.BLUE_TURN)
+                }
+                else if(cfs.getCommand() == CommandFromServer.B_TURN) {
+                    System.out.println("B Turn in client");
                     frame.setTurn('B');
+                }
                 else if(cfs.getCommand() == cfs.MOVE)
                 {
                     String data = cfs.getData();
@@ -40,19 +45,59 @@ public class ClientsListener implements Runnable
 
                     // changes the board and redraw the screen
                     frame.makeMove(c,r,data.charAt(2));
+//                    System.out.println("c:" + c + " r:" +  r + " " + data.charAt(2));
+                }
+                else if(cfs.getCommand() == cfs.RESTART)
+                {
+                    String data = cfs.getData();
+                    if(data.charAt(1) == '8') {
+                        frame.clearReset(data.charAt(2));
+                    }
+                    else if(data.charAt(2) == 'R') {
+                        frame.setReset('R');
+                        frame.setRestartText(data.charAt(2));
+                    }
+                    else {
+                        frame.setReset('B');
+                        frame.setRestartText(data.charAt(2));
+                    }
+
                 }
                 // handles the various end game states
                 else if(cfs.getCommand() == CommandFromServer.TIE)
                 {
                     frame.setText("Tie game.");
                 }
-                else if(cfs.getCommand() == CommandFromServer.RED_WINS)
+                else if(cfs.getCommand() == CommandFromServer.X_WINS)
                 {
-                    frame.setText("RED wins!");
+                    frame.setWinText('R');
+                    frame.setStatus(true);
                 }
-                else if(cfs.getCommand() == CommandFromServer.BLUE_WINS)
+                else if(cfs.getCommand() == CommandFromServer.CLOSE)
                 {
-                    frame.setText("BLUE wins!");
+                    System.out.println("Going to close windows");
+                    String player = (cfs.getData().charAt(2)=='B')?"BLACK":"RED";
+                    frame.setText(player + "QUIT, SHUTTING DOWN IN 5 seconds");
+                    frame.CloseOtherWindowIn5Seconds(player);
+
+                }
+                else if(cfs.getCommand() == CommandFromServer.OPEN)
+                {
+//                    frame.setWinText('R');
+                    String data = cfs.getData();
+                    if(data.charAt(2) == 'R') {
+                        frame.rOpened = true;
+                    }
+                    else
+                        frame.bOpened  = true;
+//                    frame.setStatus(true);
+                }
+
+
+                else if(cfs.getCommand() == CommandFromServer.O_WINS)
+                {
+                    frame.setWinText('B');
+                    frame.setStatus(true);
                 }
             }
         }
